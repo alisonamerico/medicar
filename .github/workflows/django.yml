@@ -36,9 +36,12 @@ jobs:
           poetry run flake8 .
       - name: Test with pytest
         run: |
-          poetry run pytest backend --cov=backend
-      - name: Posting Coverage
-        env:
-          CODECOV_TOKEN: "00d49437-6861-48e4-8715-b1fd5217a959"
-        run: |
-          poetry run codecov
+          poetry run pytest backend --cov=backend --cov-report=xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage.xml
+          flags: tests
+          name: codecov-umbrella
+          fail_ci_if_error: true
