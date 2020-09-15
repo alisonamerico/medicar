@@ -36,4 +36,9 @@ jobs:
           poetry run flake8 .
       - name: Test with pytest
         run: |
-          poetry run pytest
+          poetry run pytest backend --cov=backend
+      - name: Posting Coverage
+        env:
+          CODECOV_TOKEN: "00d49437-6861-48e4-8715-b1fd5217a959"
+        run: |
+          poetry run codecov
