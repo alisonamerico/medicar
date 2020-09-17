@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'backend.api',
     'rest_framework',
     'corsheaders',
+    'phone_field',
 ]
 
 MIDDLEWARE = [
