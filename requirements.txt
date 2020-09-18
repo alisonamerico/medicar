@@ -15,6 +15,9 @@ django-cors-headers==3.5.0 \
 django-phone-field==1.8.1 \
     --hash=sha256:db63af60fc3a3c66b9faa7e72bb7972cd1518299f2e93d68dd95d8df6214f7ed \
     --hash=sha256:407e74b65e8f7dd14d0a0aa89e277516d57ad6a09ce992cdd94e15b1624b9961
+django-rest-registration==0.5.6 \
+    --hash=sha256:a49539890d153f65c0fa6504de9b4539af342028bc7770267fe26722e9b101bb \
+    --hash=sha256:450254301b24af465e6decfda33d15a84594271fd4a8398023d8f65009706231
 djangorestframework==3.11.1 \
     --hash=sha256:8b1ac62c581dbc5799b03e535854b92fc4053ecfe74bad3f9c05782063d4196b \
     --hash=sha256:6dd02d5a4bd2516fb93f80360673bf540c3b6641fec8766b1da2870a5aa00b32
@@ -64,3 +67,6 @@ sqlparse==0.3.1 \
     --hash=sha256:e162203737712307dfe78860cc56c8da8a852ab2ee33750e33aeadf38d12c548
 static3==0.7.0 \
     --hash=sha256:674641c64bc75507af2eb20bef7e7e3593dca993dec6674be108fa15b42f47c8
+typing==3.7.4.3 \
+    --hash=sha256:283d868f5071ab9ad873e5e52268d611e851c870a2ba354193026f2dfb29d8b5 \
+    --hash=sha256:1187fb9c82fd670d10aa07bbb6cfcfe4bdda42d6fab8d5134f04e8c4d0b71cc9
