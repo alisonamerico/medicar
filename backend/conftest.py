@@ -5,11 +5,6 @@ from django.contrib.auth import get_user_model
 
 
 @pytest.fixture
-def test_password():
-    return 'strong-test-pass'
-
-
-@pytest.fixture
 def create_user(db):
     """
     This fixture is responsable for create user.

@@ -24,6 +24,6 @@ api_urlpatterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Auth
+    path('api/v1/', include('backend.api.urls'), name='api-root'),
     path('api/v1/auth/', include(api_urlpatterns)),
-
 ]
