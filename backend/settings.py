@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'rest_registration',
     'corsheaders',
     'phone_field',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
