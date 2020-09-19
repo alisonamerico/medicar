@@ -4,7 +4,7 @@ from backend.conftest import APIClient, pytest
 
 
 def test_specialty_view_authorized_request(api_client):
-    resp = api_client.get('/api/v1/specialty/')
+    resp = api_client.get('/api/v1/specialties/')
     assert resp.status_code == status.HTTP_200_OK
 
 
@@ -15,13 +15,13 @@ def api_client_unauthorized():
 
 
 def test_specialty_view_unauthorized_request(api_client_unauthorized):
-    resp = api_client_unauthorized.get('/api/v1/specialty/')
+    resp = api_client_unauthorized.get('/api/v1/specialties/')
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
 
 def test_get_specialty(api_client):
     resp = api_client.get(
-        '/api/v1/specialty/',
+        '/api/v1/specialties/',
         data={
             "id": 1,
             "name": "Clínico Geral"
@@ -33,7 +33,7 @@ def test_get_specialty(api_client):
 
 def test_create_specialty_not_allowed(api_client):
     resp = api_client.post(
-        '/api/v1/specialty/',
+        '/api/v1/specialties/',
         data={
             "name": "Cardiologia"
         },
@@ -51,7 +51,7 @@ def specialty():
 @pytest.fixture
 def update_specialty_not_allowed(api_client, specialty):
     resp = api_client.put(
-        f'/api/v1/specialty/{specialty.id}/',
+        f'/api/v1/specialties/{specialty.id}/',
         data={
             "id": 1,
             "name": "Pediatra"
@@ -68,7 +68,7 @@ def test_update_specialty_not_allowed(update_specialty_not_allowed, specialty):
 @pytest.fixture
 def delete_specialty_not_allowed(api_client, specialty):
     resp = api_client.delete(
-        f'/api/v1/specialty/{specialty.id}/',
+        f'/api/v1/specialties/{specialty.id}/',
         data={
             "id": 1,
             "name": "Pediatra"
