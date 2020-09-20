@@ -1,5 +1,5 @@
 from rest_framework import routers
-from backend.api.views import SpecialtyViewSet, DoctorViewSet
+from backend.api.views import SpecialtyViewSet, DoctorViewSet, ScheduleViewSet
 
 """
 Registration of urls available in the application
@@ -9,6 +9,6 @@ router = routers.DefaultRouter(trailing_slash=True)
 
 router.register('specialties', SpecialtyViewSet)
 router.register('doctors', DoctorViewSet)
-# router.register('pictures', PictureViewSet, basename='pictures')
+router.register('schedules', ScheduleViewSet)
 
 urlpatterns = router.urls
