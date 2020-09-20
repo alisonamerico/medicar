@@ -1,7 +1,9 @@
+from datetime import date
 from django.db import models
 from phone_field import PhoneField
 from django.contrib.auth import get_user_model
-from datetime import date
+from django.core.exceptions import ValidationError
+from django.contrib.postgres.fields import ArrayField
 
 """
 A model is the single, definitive source of information about your data.
@@ -35,7 +37,7 @@ class Doctor(models.Model):
     phone = PhoneField(
         blank=True, max_length=12,
         help_text="Phone number must be in the format: '(DDD) 9XXXX-XXXX'. Only numbers")
-    specialty = models.ForeignKey('Specialty', on_delete=models.PROTECT)
+    specialty = models.ForeignKey('api.Specialty', on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Doctor'
@@ -46,52 +48,48 @@ class Doctor(models.Model):
         return f'{self.id}, {self.crm}, {self.name}, {self.specialty}'
 
 
-class Hourly(models.Model):
-    """
-    This class contains the representation of the field in the Hourly table.
-    """
-    hour = models.TimeField(null=False)
-
-    class Meta:
-        verbose_name = 'Hourly'
-        verbose_name_plural = 'Hourlys'
-
-    def __str__(self):
-        """A string representation of the model."""
-        return f'{self.hour}'
-
-
 class Schedule(models.Model):
     """
     This class contains the representation of the fields in the Schedule table.
     """
-    doctor = models.ForeignKey('Doctor', on_delete=models.PROTECT)
-    day = models.DateField(default=date.today, null=False)
-    hourlys = models.ManyToManyField(Hourly)
+
+    def validate_past_date(inserted_date):
+        if date.today() > inserted_date:
+            raise ValidationError("It is not possible to insert a date before the current day!")
+        else:
+            return inserted_date
+
+    doctor = models.ForeignKey('api.Doctor', related_name='doctor_schedule', on_delete=models.PROTECT)
+    day = models.DateField(validators=[validate_past_date])
+    hourlys = ArrayField(models.TimeField(),
+                         help_text="Add hours according to the example: 09:00,10:30"
+                         )
+
+    def save(self, obj, change):
+        if Schedule.objects.filter(doctor__id=obj.doctor.id, day__exact=obj.day).exists():
+            raise ValidationError(
+                'It should not be possible to create more than one schedule for a doctor in the same day!')
+        super(Schedule, self).save(obj, change)
 
     class Meta:
         verbose_name = 'Schedule'
         verbose_name_plural = 'Schedules'
+        ordering = ['-day']
 
     def __str__(self):
         """A string representation of the model."""
-        return f'{self.id}, {self.day}'
+        return f'{self.doctor.name}, {self.day}'
 
 
 class MedicalAppointment(models.Model):
     """
     This class contains the representation of the fields in the MedicalAppointment table.
     """
-    hourly = models.ForeignKey(Hourly, on_delete=models.DO_NOTHING, null=False)
+    day = models.DateField()
+    hourly = models.TimeField()
     scheduling_date = models.DateTimeField(auto_now=True)
-    schedule = models.ForeignKey('Schedule', on_delete=models.PROTECT)
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
-
-    # def save(self, *args, **kwargs):
-    #     if self.day is None:
-    #         schedule = Schedule.objects.get(pk=self.schedule.id)
-    #         self.day = schedule.day.strftime(f'%Y-%m-%d {self.hourly}')
-    #     super(MedicalAppointment, self).save(*args, **kwargs)
+    doctor = models.ForeignKey('api.Doctor', on_delete=models.SET_NULL, null=True)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='user_appointment')
 
     def __str__(self):
-        return f'{self.hourly}'
+        return f'{self.doctor.name},{self.hourly}'

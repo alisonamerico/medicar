@@ -13,3 +13,13 @@ class SpecialtyAdmin(admin.ModelAdmin):
 class DoctorAdmin(admin.ModelAdmin):
     list_display = ('name', 'crm')
     list_filter = ('name', 'crm')
+
+
+@admin.register(models.Schedule)
+class ScheduleAdmin(admin.ModelAdmin):
+    list_filter = ('day', 'doctor', 'hourlys')
+
+
+# class MedicalAppointmentInline(admin.TabularInline):
+#     model = models.MedicalAppointment
+#     exclude = ('user', 'day')
