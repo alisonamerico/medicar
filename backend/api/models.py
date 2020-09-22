@@ -35,9 +35,10 @@ class Doctor(models.Model):
     crm = models.IntegerField(unique=True)
     email = models.EmailField(max_length=150, blank=True, null=True)
     phone = PhoneField(
-        blank=True, max_length=12,
+        blank=True, null=True, max_length=12,
         help_text="Phone number must be in the format: '(DDD) 9XXXX-XXXX'. Only numbers")
-    specialty = models.ForeignKey('api.Specialty', on_delete=models.PROTECT)
+    specialty = models.ForeignKey('api.Specialty',
+                                  related_name='doctor_specialty', on_delete=models.SET_NULL, null=True)
 
     class Meta:
         verbose_name = 'Doctor'
@@ -45,7 +46,7 @@ class Doctor(models.Model):
 
     def __str__(self):
         """A string representation of the model."""
-        return f'{self.id}, {self.crm}, {self.name}, {self.specialty}'
+        return f'{self.name}'
 
 
 class Schedule(models.Model):
@@ -92,4 +93,4 @@ class MedicalAppointment(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='user_appointment')
 
     def __str__(self):
-        return f'{self.doctor.name},{self.hourly}'
+        return f'{self.doctor.name}'

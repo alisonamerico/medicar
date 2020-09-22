@@ -1,15 +1,17 @@
 import time
 from datetime import date
-from django.db.models import Q
-from backend.api.models import Specialty, Doctor, Schedule, MedicalAppointment
-from backend.api.serializers import (
-    SpecialtySerializer, DoctorSerializer, ScheduleSerializer, MedicalAppointmentSerializer)
 
-from rest_framework.filters import OrderingFilter, SearchFilter
+from django.db.models import Q
 from rest_framework import status
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
+from backend.api.models import Doctor, MedicalAppointment, Schedule, Specialty
+from backend.api.serializers import (DoctorSerializer,
+                                     MedicalAppointmentSerializer,
+                                     ScheduleSerializer, SpecialtySerializer)
 
 
 class SpecialtyViewSet(ReadOnlyModelViewSet):
@@ -45,21 +47,21 @@ class ScheduleViewSet(ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = self.queryset
 
-        doctor = self.request.query_params.getlist('doctor')
-        especialty = self.request.query_params.getlist('especialty')
+        doctor = self.request.query_params.get('doctor')
+        specialty = self.request.query_params.get('specialty')
         start_date = self.request.query_params.get('start_date')
         final_date = self.request.query_params.get('data_final')
 
-        if not ((doctor and especialty and start_date and final_date) is None):
+        if not ((doctor and specialty and start_date and final_date) is None):
             queryset = queryset.filter(
-                Q(doctor__in=Doctor.objects.filter(especialty=especialty)) |
+                Q(doctor__in=Doctor.objects.filter(specialty=specialty)) |
                 Q(doctor__id=doctor)).filter(day__gte=start_date, day__lte=final_date)
         return queryset
 
     def get(self, request, *args, **kwargs):
         for schedule in self.get_queryset():
             for hourly in schedule.hourlys:
-                if time.strftime("%H:%M:%S") > str(hourly) and date.today() >= schedule.day:
+                if time.strftime("%H:%M:%S") > f'{hourly}' and date.today() >= schedule.day:
                     schedule.hourlys.remove(hourly)
                     schedule.save()
 
@@ -81,7 +83,7 @@ class MedicalAppointmentViewSet(ModelViewSet):
     def get(self, request, *args, **kwargs):
         for appointment in MedicalAppointment.objects.filter(user__id=request.user.id).all():
             if date.today() >= appointment.day:
-                if time.strftime("%H:%M:%S") > str(appointment.hourly):
+                if time.strftime("%H:%M:%S") > f'{appointment.hourly}':
                     obj_appointment = MedicalAppointment.objects.get(id=appointment.id)
                     obj_appointment.save()
         appointments = MedicalAppointment.objects.filter(user__id=request.user.id)
@@ -101,14 +103,14 @@ class MedicalAppointmentViewSet(ModelViewSet):
             })
         else:
             for hourly_schedule in schedule.hourlys:
-                if hourly == str(hourly_schedule):
+                if hourly == f'{hourly_schedule}':
                     if MedicalAppointment.objects.filter(day=schedule.day, hourly=hourly, user=request.user).exists():
                         return Response({'message': 'There is already an appointment for that day and time!'})
                     else:
                         appointment = MedicalAppointment.objects.create(
                             day=schedule.day,
                             hourly=hourly_schedule,
-                            medico=schedule.medico,
+                            doctor=schedule.doctor,
                             user=request.user
                         )
                         schedule = Schedule.objects.filter(hourlys__contains=[hourly], id=schedule_id)

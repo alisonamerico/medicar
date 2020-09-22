@@ -20,6 +20,6 @@ class ScheduleAdmin(admin.ModelAdmin):
     list_filter = ('day', 'doctor', 'hourlys')
 
 
-# class MedicalAppointmentInline(admin.TabularInline):
-#     model = models.MedicalAppointment
-#     exclude = ('user', 'day')
+@admin.register(models.MedicalAppointment)
+class MedicalAppointment(admin.ModelAdmin):
+    list_display = ('user', 'doctor', 'day', 'hourly')
