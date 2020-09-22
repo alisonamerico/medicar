@@ -3,9 +3,9 @@ from rest_framework import status
 from backend.conftest import APIClient, pytest
 
 
-# def test_specialty_view_authorized_request(api_client):
-#     resp = api_client.get('/api/v1/specialties/')
-#     assert resp.status_code == status.HTTP_200_OK
+def test_specialty_view_authorized_request(api_client):
+    resp = api_client.get('/api/v1/specialties/')
+    assert resp.status_code == status.HTTP_200_OK
 
 
 @pytest.fixture
@@ -19,27 +19,27 @@ def test_specialty_view_unauthorized_request(api_client_unauthorized):
     assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
 
-# def test_get_specialty(api_client):
-#     resp = api_client.get(
-#         '/api/v1/specialties/',
-#         data={
-#             "id": 1,
-#             "name": "Clínico Geral"
-#         },
-#         format='json'
-#     )
-#     assert resp.status_code == status.HTTP_200_OK
+def test_get_specialty(api_client):
+    resp = api_client.get(
+        '/api/v1/specialties/',
+        data={
+            "id": 1,
+            "name": "Clínico Geral"
+        },
+        format='json'
+    )
+    assert resp.status_code == status.HTTP_200_OK
 
 
-# def test_create_specialty_not_allowed(api_client):
-#     resp = api_client.post(
-#         '/api/v1/specialties/',
-#         data={
-#             "name": "Cardiologia"
-#         },
-#         format='json'
-#     )
-#     assert resp.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+def test_create_specialty_not_allowed(api_client):
+    resp = api_client.post(
+        '/api/v1/specialties/',
+        data={
+            "name": "Cardiologia"
+        },
+        format='json'
+    )
+    assert resp.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
 @pytest.fixture
@@ -60,9 +60,9 @@ def update_specialty_not_allowed(api_client, specialty):
     return resp
 
 
-# def test_update_specialty_not_allowed(update_specialty_not_allowed, specialty):
-#     # assert update_specialty.data["name"] == specialty.name
-#     assert update_specialty_not_allowed.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+def test_update_specialty_not_allowed(update_specialty_not_allowed, specialty):
+    # assert update_specialty.data["name"] == specialty.name
+    assert update_specialty_not_allowed.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
 @pytest.fixture
@@ -77,5 +77,5 @@ def delete_specialty_not_allowed(api_client, specialty):
     return resp
 
 
-# def test_delete_specialty_not_allowed(delete_specialty_not_allowed):
-#     assert delete_specialty_not_allowed.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
+def test_delete_specialty_not_allowed(delete_specialty_not_allowed):
+    assert delete_specialty_not_allowed.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

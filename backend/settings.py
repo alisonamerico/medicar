@@ -80,6 +80,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
     'https://127.0.0.1:8080',
     'https://127.0.0.1:8000',
+    'http://0.0.0.0:8000',
 ]
 
 # CONFIG. REST_FRAMEWORK
