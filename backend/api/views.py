@@ -2,11 +2,12 @@ import time
 from datetime import date
 
 from django.db.models import Q
-from rest_framework import status
+
+from rest_framework import generics, status
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from backend.api.models import Doctor, MedicalAppointment, Schedule, Specialty
 from backend.api.serializers import (DoctorSerializer,
@@ -41,8 +42,8 @@ class DoctorViewSet(ReadOnlyModelViewSet):
 class ScheduleViewSet(ReadOnlyModelViewSet):
     queryset = Schedule.objects.all()
     serializer_class = ScheduleSerializer
-    filter_backends = (SearchFilter, OrderingFilter)
     permission_classes = (IsAuthenticated,)
+    filter_backends = (SearchFilter, OrderingFilter)
 
     def get_queryset(self):
         queryset = self.queryset
@@ -73,11 +74,9 @@ class ScheduleViewSet(ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class MedicalAppointmentViewSet(ModelViewSet):
+class MedicalAppointmentList(generics.ListCreateAPIView):
     queryset = MedicalAppointment.objects.all()
     serializer_class = MedicalAppointmentSerializer
-    filter_backends = (OrderingFilter,)
-    allowed_methods = ('GET', 'POST', 'DELETE')
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
@@ -91,8 +90,8 @@ class MedicalAppointmentViewSet(ModelViewSet):
         return Response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        schedule_id = request.data['schedule_id']
-        hourly = request.data['hourly'] + ':00'
+        schedule_id = request.data.get('schedule_id')
+        hourly = request.data.get('hourly')
 
         try:
             schedule = Schedule.objects.get(id=schedule_id)
@@ -101,6 +100,7 @@ class MedicalAppointmentViewSet(ModelViewSet):
                 'message': 'No schedule found!',
                 'status': status.HTTP_404_NOT_FOUND
             })
+
         else:
             for hourly_schedule in schedule.hourlys:
                 if hourly == f'{hourly_schedule}':
@@ -122,15 +122,16 @@ class MedicalAppointmentViewSet(ModelViewSet):
                         return Response(serializer.data)
         return Response({'message': 'The selected time is not available!'})
 
-    def destroy(self, request, *args, **kwargs):
-        appointment = MedicalAppointment.objects.filter(pk=self.kwargs.get(
-            'pk'), user=self.request.user).first()
-        if appointment is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        appointment.user = None
-        appointment.save()
-        return Response({
-            'status': status.HTTP_204_NO_CONTENT,
-            'message': 'It is not possible to cancel an appointment\
-             for another patient or that there is no'
-        })
+
+class MedicalAppointmentDestroy(generics.DestroyAPIView):
+    queryset = MedicalAppointment.objects.all()
+    serializer_class = MedicalAppointmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, *args, **kwargs):
+        if MedicalAppointment.objects.filter(id=kwargs['pk'], user=request.user):
+            return self.destroy(request, *args, **kwargs)
+        else:
+            return Response({
+                'msg': 'It is not possible to cancel an appointment for another patient or that there is no'
+            })

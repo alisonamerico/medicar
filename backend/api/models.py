@@ -66,12 +66,6 @@ class Schedule(models.Model):
                          help_text="Add hours according to the example: 09:00,10:30"
                          )
 
-    def save(self, obj, change):
-        if Schedule.objects.filter(doctor__id=obj.doctor.id, day__exact=obj.day).exists():
-            raise ValidationError(
-                'It should not be possible to create more than one schedule for a doctor in the same day!')
-        super(Schedule, self).save(obj, change)
-
     class Meta:
         verbose_name = 'Schedule'
         verbose_name_plural = 'Schedules'
@@ -91,6 +85,10 @@ class MedicalAppointment(models.Model):
     scheduling_date = models.DateTimeField(auto_now=True)
     doctor = models.ForeignKey('api.Doctor', on_delete=models.SET_NULL, null=True)
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='user_appointment')
+
+    class Meta:
+        verbose_name = 'MedicalAppointment'
+        verbose_name_plural = 'MedicalAppointments'
 
     def __str__(self):
         return f'{self.doctor.name}'

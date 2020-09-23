@@ -13,8 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
+from backend.api.views import MedicalAppointmentList, MedicalAppointmentDestroy
 
 
 api_urlpatterns = [
@@ -24,6 +26,9 @@ api_urlpatterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Auth
-    path('api/v1/', include('backend.api.urls'), name='api-root'),
+    path('api/v1/', include('backend.api.urls')),
+    path('api/v1/appointments/', MedicalAppointmentList.as_view()),
+    path('api/v1/appointments/<int:pk>/', MedicalAppointmentDestroy.as_view()),
+    # path('api/v1/schedules/', ScheduleList.as_view()),
     path('api/v1/auth/', include(api_urlpatterns)),
 ]
