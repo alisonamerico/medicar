@@ -26,9 +26,9 @@ api_urlpatterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     # Auth
+    path('api/v1/auth/', include(api_urlpatterns)),
+    # Application
     path('api/v1/', include('backend.api.urls')),
     path('api/v1/appointments/', MedicalAppointmentList.as_view()),
     path('api/v1/appointments/<int:pk>/', MedicalAppointmentDestroy.as_view()),
-    # path('api/v1/schedules/', ScheduleList.as_view()),
-    path('api/v1/auth/', include(api_urlpatterns)),
 ]
