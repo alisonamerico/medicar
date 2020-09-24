@@ -353,6 +353,12 @@ Return Admin Medical Appointment:
 
 ![admin_return_medical_appointment](readme-images/11_admin_return_medical_appointment.png)
 
+Run all tests:
+
+```console
+docker-compose exec web pytest --cov=backend
+```
+
 When you’re done, don’t forget to close down your Docker container! :wink:
 
 ```console
